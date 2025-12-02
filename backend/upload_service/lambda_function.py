@@ -11,6 +11,7 @@ from botocore.config import Config
 REGION = os.environ.get('AWS_REGION')
 ENDPOINT_URL = f'https://s3.{REGION}.amazonaws.com'
 
+#configure boto3 client with specific signature version
 my_config = Config(
     region_name=REGION,
     signature_version='s3v4'
