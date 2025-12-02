@@ -45,6 +45,9 @@ jobs:
             --function-name GeneratePresignedURL \
             --environment "Variables={RAWVIDEO_BUCKET_NAME=${{ secrets.RAWVIDEO_BUCKET_NAME}},REGION=${{ secrets.AWS_REGION}}}"
 
+          echo "Waiting for GeneratePresignedURL code update to complete..."
+          aws lambda wait function-updated --function-name GeneratePresignedURL
+
           # 3. UPDATE CODE
           aws lambda update-function-code \
             --function-name GeneratePresignedURL \
@@ -71,6 +74,9 @@ jobs:
           aws lambda update-function-configuration \
             --function-name ContentListingService \
             --environment "Variables={VIDEO_METADATA_TABLE_NAME=${{ secrets.VIDEO_METADATA_TABLE_NAME}},RAWVIDEO_BUCKET_NAME=${{ secrets.RAWVIDEO_BUCKET_NAME}},REGION=${{ secrets.AWS_REGION}}}"
+
+          echo "Waiting for ContentListingService code update to complete..."
+          aws lambda wait function-updated --function-name ContentListingService
 
           # 3. UPDATE CODE
           aws lambda update-function-code \
@@ -101,6 +107,9 @@ jobs:
             --function-name userAuthenticate \
             --environment "Variables={KEY_PAIR_ID_PLAYBACK=${{ secrets.KEY_PAIR_ID_PLAYBACK}},CLOUDFRONT_DOMAIN=${{ secrets.CLOUDFRONT_DOMAIN}}}"
 
+          echo "Waiting for userAuthenticate code update to complete..."
+          aws lambda wait function-updated --function-name userAuthenticate
+          
           # 3. UPDATE CODE
           aws lambda update-function-code \
             --function-name userAuthenticate \
@@ -126,6 +135,9 @@ jobs:
           # 2. UPDATE CODE (Updates the zip file)
           aws lambda update-function-code --function-name ContentMetaDataService --zip-file fileb://backend/content_metadata_service/deployment.zip
 
+          echo "Waiting for ContentMetaDataService code update to complete..."
+          aws lambda wait function-updated --function-name ContentMetaDataService
+
           # 3. UPDATE CONFIGURATION (Updates environment variables)
           aws lambda update-function-configuration --function-name ContentMetaDataService --environment "Variables={VIDEO_METADATA_TABLE_NAME=${{ secrets.VIDEO_METADATA_TABLE_NAME}},SQS_SEGMENTATION_QUEUE_URL=${{ secrets.SQS_SEGMENTATION_QUEUE_URL}}}"
 
@@ -149,6 +161,9 @@ jobs:
           # 2. UPDATE CONFIGURATION (Sets Env Vars)
           aws lambda update-function-configuration --function-name ManifestFileProcessor --environment "Variables={VIDEO_METADATA_TABLE_NAME=${{ secrets.VIDEO_METADATA_TABLE_NAME}},PROCESSED_S3_BUCKET=${{ secrets.PROCESSED_S3_BUCKET}},CLOUDFRONT_DOMAIN=${{ secrets.CLOUDFRONT_DOMAIN}}}"
           
+          echo "Waiting for ManifestFileProcessor code update to complete..."
+          aws lambda wait function-updated --function-name ManifestFileProcessor
+
           # 3. UPDATE CODE
           aws lambda update-function-code --function-name ManifestFileProcessor --zip-file fileb://backend/manifest_file_processor/deployment.zip
 
@@ -160,7 +175,7 @@ jobs:
       # =================================================================
       - name: 9.1 Package and Deploy Segmentation Service
         run: |
-          echo "Deploying ContentMetadataService..."
+          echo "Deploying SegmentationService..."
           
           # 1. Install dependencies and package code (boto3)
           pip install -r backend/segmentation_service/requirements.txt -t backend/segmentation_service/package
@@ -172,6 +187,9 @@ jobs:
           # 2. UPDATE CONFIGURATION FIRST
           aws lambda update-function-configuration --function-name SegmentationService --environment "Variables={TRANSCODING_JOB_QUEUE_URL=${{ secrets.TRANSCODING_JOB_QUEUE_URL}}}"
           
+          echo "Waiting for SegmentationService code update to complete..."
+          aws lambda wait function-updated --function-name SegmentationService
+
           # 3. Update Environment Variables (DynamoDB Table Name, Region)
           aws lambda update-function-code --function-name SegmentationService --zip-file fileb://backend/segmentation_service/deployment.zip
 
