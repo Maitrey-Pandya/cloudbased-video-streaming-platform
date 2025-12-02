@@ -60,6 +60,7 @@ def update_dynamo_status(video_id, status, cdn_path=None):
     except Exception as e:
         logger.error(f"ERROR: Failed to update DynamoDB for {video_id}. Full Error: {e}")
 
+#update chunk counter
 def update_chunk_counter(video_id, total_chunks, completed_qualities):
     """
     Atomically increments the ChunksCompleted counter and tracks completed qualities.
