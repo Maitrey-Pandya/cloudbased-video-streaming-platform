@@ -3,7 +3,9 @@ name: Deploy Core Backend Lambdas
 on:
   push:
     branches: [ main ]
-
+  path:
+    - 'backend/**'
+    - '.github/workflows/deploy-backend-service.yml'
 
 jobs:
   deploy:
